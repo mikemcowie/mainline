@@ -1,0 +1,59 @@
+# The main SDLC pipeline that runs on every pull request
+name: SDLC Workflow
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - chore/initial-workflow-and-precommit # TODO - remove me, debugging
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          ignore-nothing-to-cache: true
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+    - test
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          ignore-nothing-to-cache: true
+
+  tested-and-buildable: # dummy job to be a CI blocker
+    runs-on: ubuntu-latest
+    needs:
+    - test
+    - build
+    steps:
+      - name: completed
+        run: echo 'success'
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+    - test
+    - build
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          ignore-nothing-to-cache: true
+    if: github.event_name == 'push'
