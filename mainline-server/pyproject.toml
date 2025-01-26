@@ -32,7 +32,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--cov=src --cov-report html --cov-report term"
+addopts = "--cov=src --cov-report html --cov-report term --cov-fail-under=100"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "PL", "RUF", "FAST"]
@@ -45,6 +45,7 @@ preview = true
 
 [tool.coverage.report]
 exclude_lines = [
+    "# pragma: no cover",
     "pass\n",
     "raise err",
     'if __name__ == "__main__":'
