@@ -33,3 +33,20 @@ repos:
     rev: v1.7.7
     hooks:
     -   id: actionlint-docker
+
+-   repo: local
+    hooks:
+    -   id: ruff-check-server
+        name: ruff-check
+        entry: bash -c 'cd mainline-server && uv run ruff check --fix'
+        language: system
+
+    -   id: ruff-format-server
+        name: ruff-format
+        entry: bash -c 'cd mainline-server && uv run ruff format'
+        language: system
+
+    -   id: mypy-server
+        name: mypy-server
+        entry: bash -c 'cd mainline-server && uv run mypy .'
+        language: system
