@@ -1,7 +1,9 @@
 from enum import StrEnum
 from typing import Mapping
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Request, status
+
+from mainline_server.rest_schema import APILink
 
 
 class ContentType(StrEnum):
@@ -41,3 +43,10 @@ def allowable_content_types(headers: Mapping[str, str]) -> list[ContentType]:
         status_code=status.HTTP_406_NOT_ACCEPTABLE,
         detail=f"server accepts {[t.value for t in ContentType]}, got {accepts_header}",
     )
+
+
+def provide_hyperlink(
+    request: Request, name: str, target: str, **path_params
+) -> APILink:
+    """Provides APILink object to help add hypermedia to response objects"""
+    return APILink(href=str(request.url_for(target, **path_params)), name=name)  # type: ignore
