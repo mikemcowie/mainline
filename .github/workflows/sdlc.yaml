@@ -19,6 +19,9 @@ jobs:
         with:
           enable-cache: true
           ignore-nothing-to-cache: true
+      - name: run server tests
+        run: uv run pytest
+        working-directory: mainline-server
 
   build:
     runs-on: ubuntu-latest
