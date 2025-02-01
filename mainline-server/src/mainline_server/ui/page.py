@@ -4,6 +4,8 @@ from dominate import document  # type: ignore
 
 from mainline_server.rest_schema import APIResource
 from mainline_server.ui.components.head import DocumentHead
+from mainline_server.ui.components.home import Home
+from mainline_server.ui.components.layout import Column, Container, Row
 from mainline_server.ui.script import RemoteScript
 from mainline_server.ui.style import RemoteStyleSheet
 
@@ -37,16 +39,12 @@ class Page:
         self.build()
 
     def render_head(self):
-        head = DocumentHead(
+        return DocumentHead(
             self.doc,
             self.resource,
             self.STYLESHEETS,
             self.SCRIPTS,
-        )
-        with self.doc.head:
-            head.build()
-        with self.body:
-            pass
+        ).build()
 
     @property
     def body(self):
@@ -56,6 +54,35 @@ class Page:
     def build(self):
         with self.doc.head:
             self.render_head()
+        with self.body:
+            self.body.container = Container(
+                id="root-container",
+                rows=[
+                    Row(
+                        id="head-row",
+                        columns=[Column(id="head-col-1", width=12, children=[])],
+                    ),
+                    Row(
+                        id="body-row",
+                        columns=[
+                            Column(id="body-col-1", width=4, children=[]),
+                            Column(
+                                id="body-col-2", width=4, children=[self.main_resource]
+                            ),
+                            Column(id="body-col-3", width=4, children=[]),
+                        ],
+                    ),
+                    Row(
+                        id="footer-row",
+                        columns=[Column(id="footer-col-1", width=12, children=[])],
+                    ),
+                ],
+            ).build()
+
+    @property
+    def main_resource(self):
+        """Represents the main resource of the page"""
+        return Home(id="home")
 
     def __str__(self):
         return str(self.doc)

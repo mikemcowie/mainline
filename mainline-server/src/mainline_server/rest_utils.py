@@ -26,11 +26,13 @@ class ContentType(StrEnum):
 @cache
 def meta(app: FastAPI) -> tuple[MetaUnion, ...]:
     """Provides meta items of a response"""
+    allowed_remotes = [r.src for r in Page.SCRIPTS] + [r.href for r in Page.STYLESHEETS]
     return (
         MetaCharset(charset="UTF-8"),
         # sane httpquivcontent per https://www.w3schools.com/tags/att_meta_http_equiv.asp
         MetaHTMLEquivContent(
-            http_equiv="content-security-policy", content="default-src 'self'"
+            http_equiv="content-security-policy",
+            content=f"default-src 'self' {' '.join(allowed_remotes)}",
         ),
         MetaNameContent(name="application-name", content=app.title),
         MetaNameContent(name="author", content=AUTHOR),
@@ -89,7 +91,6 @@ def negotiated(request: Request, resource: APIResource):
     if preferred == ContentType.JSON:
         # FastAPI itself will render the pydantic object
         # Into a response object
-        print(resource.meta)
         return resource
     if preferred == ContentType.HTML:
         # render via the whole HTML rendering machinery
