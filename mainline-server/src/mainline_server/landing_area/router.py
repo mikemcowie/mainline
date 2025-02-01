@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 
 from mainline_server.rest_schema import APIResource, BaseResource
-from mainline_server.rest_utils import negotiated, provide_hyperlink
+from mainline_server.rest_utils import meta, negotiated, provide_hyperlink
 
 router = APIRouter()
 
@@ -17,6 +17,7 @@ def api_root(request: Request):
         request,
         APIResource(
             self=provide_hyperlink(request, "Home", "api_root"),
+            meta=meta(request.app),
             title="Home",
             object={},
             links=[],

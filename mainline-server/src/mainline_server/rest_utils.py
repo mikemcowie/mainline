@@ -1,16 +1,46 @@
 from enum import StrEnum
+from functools import cache
 from typing import Mapping
 
-from fastapi import HTTPException, Request, status
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 
-from mainline_server.rest_schema import APILink, BaseResource
+from mainline_server import AUTHOR, KEYWORDS
+from mainline_server.rest_schema import (
+    APILink,
+    APIResource,
+    MetaCharset,
+    MetaHTMLEquivContent,
+    MetaNameContent,
+    MetaUnion,
+)
+from mainline_server.ui.page import Page
 
 
 class ContentType(StrEnum):
     JSON = "application/json"
     HTML = "text/html"
     PLAINTEXT = "text/plain"
+
+
+@cache
+def meta(app: FastAPI) -> tuple[MetaUnion, ...]:
+    """Provides meta items of a response"""
+    return (
+        MetaCharset(charset="UTF-8"),
+        # sane httpquivcontent per https://www.w3schools.com/tags/att_meta_http_equiv.asp
+        MetaHTMLEquivContent(
+            http_equiv="content-security-policy", content="default-src 'self'"
+        ),
+        MetaNameContent(name="application-name", content=app.title),
+        MetaNameContent(name="author", content=AUTHOR),
+        MetaNameContent(name="description", content=app.description),
+        MetaNameContent(name="generator", content=app.title),
+        MetaNameContent(name="keywords", content=", ".join(KEYWORDS)),
+        MetaNameContent(
+            name="viewport", content="width=device-width, initial-scale=1.0"
+        ),
+    )
 
 
 def allowable_content_types(headers: Mapping[str, str]) -> list[ContentType]:
@@ -53,24 +83,18 @@ def provide_hyperlink(
     return APILink(href=str(request.url_for(target, **path_params)), name=name)  # type: ignore
 
 
-def negotiated(request: Request, object: BaseResource):
+def negotiated(request: Request, resource: APIResource):
     """Returns a negotiated response object"""
     preferred = allowable_content_types(request.headers)[0]
     if preferred == ContentType.JSON:
         # FastAPI itself will render the pydantic object
         # Into a response object
-        return object
+        print(resource.meta)
+        return resource
     if preferred == ContentType.HTML:
         # render via the whole HTML rendering machinery
         # which is a whole other module to be designed still
-        return HTMLResponse(
-            content=(
-                "<html><body><a>HTML response was negotiated, "
-                "but a proper HTML renderer has not been implemented yet. "
-                "Following is the JSON data that will be rendered</a>"
-                f"</br><code>{object.model_dump_json()}</code></body></html>"
-            )
-        )
+        return HTMLResponse(str(Page(resource)))
     raise HTTPException(
         status_code=status.HTTP_406_NOT_ACCEPTABLE,
         detail="caannot find acceptable response type for accept header "
