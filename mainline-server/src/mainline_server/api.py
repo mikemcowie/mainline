@@ -5,6 +5,7 @@ from fastapi import FastAPI, status
 from fastapi.responses import PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
+from mainline_server import NAME
 from mainline_server.landing_area.router import router as landing_area_router
 
 logger = structlog.get_logger()
@@ -13,7 +14,7 @@ logger = structlog.get_logger()
 def app_factory(
     dev: bool = False, htmlcov_dir: Path = Path(__file__).parents[2] / "htmlcov"
 ):
-    api = FastAPI()
+    api = FastAPI(title=NAME)
 
     @api.get("/health", status_code=status.HTTP_200_OK)
     def health():

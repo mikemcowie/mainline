@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "dominate>=2.9.1",
     "fastapi[standard]>=0.115.7",
     "structlog>=25.1.0",
     "typer>=0.15.1",
@@ -55,3 +56,6 @@ exclude_lines = [
 concurrency = ["thread", "multiprocessing", "greenlet"]
 parallel = true
 sigterm = true
+
+[tool.mypy]
+ignore_missing_imports = true
