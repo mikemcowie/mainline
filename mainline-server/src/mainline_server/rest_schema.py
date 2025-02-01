@@ -101,6 +101,9 @@ class MetaHTMLEquivContent(BaseMeta):
     )
 
 
+MetaUnion = MetaCharset | MetaHTMLEquivContent | MetaNameContent
+
+
 class APIResource(BaseResource, Generic[ObjectT]):
     """The base resource for all response objects"""
 
@@ -115,7 +118,7 @@ class APIResource(BaseResource, Generic[ObjectT]):
             "Used to render into the HTML page title for HTML resources."
         ),
     )
-    meta: tuple[BaseMeta, ...] = Field(
+    meta: tuple[MetaUnion, ...] = Field(
         ..., title="HTML meta attribute", description="HTML meta attributes"
     )
     object: ObjectT = Field(..., alias="object", title="parameterized Object Type")

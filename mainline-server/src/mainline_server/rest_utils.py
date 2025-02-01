@@ -9,10 +9,10 @@ from mainline_server import AUTHOR, KEYWORDS
 from mainline_server.rest_schema import (
     APILink,
     APIResource,
-    BaseMeta,
     MetaCharset,
     MetaHTMLEquivContent,
     MetaNameContent,
+    MetaUnion,
 )
 from mainline_server.ui.page import Page
 
@@ -24,7 +24,7 @@ class ContentType(StrEnum):
 
 
 @cache
-def meta(app: FastAPI) -> tuple[BaseMeta, ...]:
+def meta(app: FastAPI) -> tuple[MetaUnion, ...]:
     """Provides meta items of a response"""
     return (
         MetaCharset(charset="UTF-8"),
@@ -89,7 +89,8 @@ def negotiated(request: Request, resource: APIResource):
     if preferred == ContentType.JSON:
         # FastAPI itself will render the pydantic object
         # Into a response object
-        return object
+        print(resource.meta)
+        return resource
     if preferred == ContentType.HTML:
         # render via the whole HTML rendering machinery
         # which is a whole other module to be designed still

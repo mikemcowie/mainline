@@ -1,4 +1,5 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
+from typing import Literal
 
 from dominate import tags as t  # type: ignore
 
@@ -13,8 +14,8 @@ class RemoteStyleSheet:
     id: str
     href: str
     integrity: str
-    rel: str = "stylesheet"
-    crossorigin: str = "anonymous"
+    rel: Literal["stylesheet"] = field(default="stylesheet", init=False)
+    crossorigin: Literal["anonymous"] = field(default="anonymous", init=False)
 
     def as_tag(self):
         return self.TAG_TYPE(**asdict(self))
