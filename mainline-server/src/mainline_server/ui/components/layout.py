@@ -13,14 +13,11 @@ class Container(Component):
     """
 
     id: str
-    rows: list["Row"]
+    children: list["Row"]
     cls: list[str] = field(default_factory=lambda: ["container-fluid"])
 
     def build(self):
-        with t.div(cls=" ".join(self.cls), id=self.id) as c:
-            for row in self.rows:
-                row.build()
-            return c
+        return t.div(cls=" ".join(self.cls), id=self.id)
 
 
 @dataclass
@@ -31,14 +28,11 @@ class Row(Component):
     """
 
     id: str
-    columns: list["Column"]
+    children: list["Column"]
     cls: list[str] = field(default_factory=lambda: ["row"])
 
     def build(self):
-        with t.div(cls=" ".join(self.cls), id=self.id) as r:
-            for c in self.columns:
-                c.build()
-            return r
+        return t.div(cls=" ".join(self.cls), id=self.id)
 
 
 @dataclass
@@ -54,7 +48,4 @@ class Column(Component):
     cls: list[str] = field(default_factory=lambda: ["col"])
 
     def build(self):
-        c = t.div(cls=" ".join([*self.cls, f"col-{self.width}"]), id=self.id)
-        with c:
-            for child in self.children:
-                child.build()
+        return t.div(cls=" ".join([*self.cls, f"col-{self.width}"]), id=self.id)

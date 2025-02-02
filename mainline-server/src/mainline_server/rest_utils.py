@@ -8,13 +8,14 @@ from fastapi.responses import HTMLResponse
 from mainline_server import AUTHOR, KEYWORDS
 from mainline_server.rest_schema import (
     APILink,
-    APIResource,
     MetaCharset,
     MetaHTMLEquivContent,
     MetaNameContent,
     MetaUnion,
 )
-from mainline_server.ui.page import Page
+from mainline_server.ui.components.layout import Column, Component, Container, Row
+from mainline_server.ui.components.page import DocumentHead, Page
+from mainline_server.ui.render import render
 
 
 class ContentType(StrEnum):
@@ -26,7 +27,9 @@ class ContentType(StrEnum):
 @cache
 def meta(app: FastAPI) -> tuple[MetaUnion, ...]:
     """Provides meta items of a response"""
-    allowed_remotes = [r.src for r in Page.SCRIPTS] + [r.href for r in Page.STYLESHEETS]
+    allowed_remotes = [r.src for r in DocumentHead.scripts] + [
+        r.href for r in DocumentHead.stylesheets
+    ]
     return (
         MetaCharset(charset="UTF-8"),
         # sane httpquivcontent per https://www.w3schools.com/tags/att_meta_http_equiv.asp
@@ -85,17 +88,67 @@ def provide_hyperlink(
     return APILink(href=str(request.url_for(target, **path_params)), name=name)  # type: ignore
 
 
-def negotiated(request: Request, resource: APIResource):
+def negotiated(request: Request, main_component: Component):
     """Returns a negotiated response object"""
     preferred = allowable_content_types(request.headers)[0]
     if preferred == ContentType.JSON:
         # FastAPI itself will render the pydantic object
         # Into a response object
-        return resource
+        return main_component.resource
     if preferred == ContentType.HTML:
         # render via the whole HTML rendering machinery
         # which is a whole other module to be designed still
-        return HTMLResponse(str(Page(resource)))
+        return HTMLResponse(
+            str(
+                render(
+                    Page(
+                        resource=main_component.resource,
+                        children=[
+                            Container(
+                                id="root-container",
+                                cls=["container-fluid", "h-100", "overflow-hidden"],
+                                children=[
+                                    Row(
+                                        id="head-row",
+                                        children=[
+                                            Column(
+                                                id="head-col-1", width=12, children=[]
+                                            )
+                                        ],
+                                    ),
+                                    Row(
+                                        id="body-row",
+                                        cls=["row", "min-vh-100"],
+                                        children=[
+                                            Column(
+                                                id="body-col-1", width=4, children=[]
+                                            ),
+                                            Column(
+                                                id="body-col-2",
+                                                width=4,
+                                                children=[main_component],
+                                                cls=["col", "align-self-center"],
+                                            ),
+                                            Column(
+                                                id="body-col-3", width=4, children=[]
+                                            ),
+                                        ],
+                                    ),
+                                    Row(
+                                        id="footer-row",
+                                        children=[
+                                            Column(
+                                                id="footer-col-1", width=12, children=[]
+                                            )
+                                        ],
+                                    ),
+                                ],
+                            )
+                        ],
+                    )
+                )
+            )
+        )
     raise HTTPException(
         status_code=status.HTTP_406_NOT_ACCEPTABLE,
         detail="caannot find acceptable response type for accept header "

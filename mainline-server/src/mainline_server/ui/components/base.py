@@ -16,7 +16,7 @@ class Component(Protocol):
     a page
     """
 
-    doc: dom_tag
+    children: list["Component"]
 
     @abstractmethod
     def build(self) -> dom_tag:
