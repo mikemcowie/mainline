@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 from dominate import tags as t  # type: ignore
 
-from mainline_server.ui.components.base import Component
+from hyperapi.components.base import Component
 
 
 @dataclass

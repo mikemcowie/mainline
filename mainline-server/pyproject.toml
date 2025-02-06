@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "dominate>=2.9.1",
     "fastapi[standard]>=0.115.7",
+    "hyperapi",
     "structlog>=25.1.0",
     "typer>=0.15.1",
     "uvicorn>=0.34.0",
@@ -26,12 +27,14 @@ build-backend = "hatchling.build"
 dev = [
     "beautifulsoup4>=4.12.3",
     "greenlet>=3.1.1",
+    "hatch>=1.14.0",
     "ipython>=8.32.0",
     "mypy>=1.14.1",
     "polyfactory>=2.19.0",
     "py-w3c>=0.3.1",
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
+    "python-semantic-release>=9.17.0",
     "ruff>=0.9.3",
     "tenacity>=9.0.0",
     "types-beautifulsoup4>=4.12.0.20241020",
@@ -64,3 +67,6 @@ sigterm = true
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.uv.sources]
+hyperapi = { path = "../libs/hyperapi", editable = true }

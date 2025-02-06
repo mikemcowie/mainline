@@ -4,18 +4,18 @@ from typing import Mapping
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
+from hyperapi.components.layout import Column, Component, Container, Row
+from hyperapi.components.page import DocumentHead, Page
+from hyperapi.components.render import render
 
 from mainline_server import AUTHOR, KEYWORDS
-from mainline_server.rest_schema import (
+from hyperapi.rest_schema import (
     APILink,
     MetaCharset,
     MetaHTMLEquivContent,
     MetaNameContent,
     MetaUnion,
 )
-from mainline_server.ui.components.layout import Column, Component, Container, Row
-from mainline_server.ui.components.page import DocumentHead, Page
-from mainline_server.ui.render import render
 
 
 class ContentType(StrEnum):
@@ -85,7 +85,9 @@ def provide_hyperlink(
     request: Request, name: str, target: str, **path_params
 ) -> APILink:
     """Provides APILink object to help add hypermedia to response objects"""
-    return APILink(href=str(request.url_for(target, **path_params)), name=name)  # type: ignore
+    return APILink(
+        href=str(request.url_for(target, **path_params)), name=name, actions=[]
+    )  # type: ignore
 
 
 def negotiated(request: Request, main_component: Component):

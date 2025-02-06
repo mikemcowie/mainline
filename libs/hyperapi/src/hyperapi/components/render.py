@@ -1,4 +1,4 @@
-from mainline_server.ui.components.base import Component
+from hyperapi.components.base import Component
 
 
 def render(component: Component):

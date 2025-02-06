@@ -2,10 +2,10 @@ from dataclasses import dataclass
 from textwrap import dedent
 
 from dominate import tags as t  # type: ignore
+from hyperapi.components.base import Component
+from hyperapi.components.form import Form
+from hyperapi.rest_schema import APIResource, BaseResource
 from pydantic import Field
-
-from mainline_server.rest_schema import APIResource, BaseResource
-from mainline_server.ui.components.base import Component
 
 
 class HomePageCopy(BaseResource):
@@ -32,6 +32,17 @@ class COPY:
 HomePageResource = APIResource[HomePageCopy]
 
 
+class GithubRepositoryReference(BaseResource):
+    account: str
+    name: str
+
+
+class HomePageEnquiryForm(BaseResource):
+    """Schema for homepage form to discover a project's availability"""
+
+    github_repository: GithubRepositoryReference = Field(...)
+
+
 @dataclass
 class HomePage(Component):
     resource: HomePageResource
@@ -42,4 +53,9 @@ class HomePage(Component):
             t.h1(self.resource.object.heading)
             t.br()
             t.p(self.resource.object.detail)
+            for link in self.resource.links:
+                for action in link.actions:
+                    Form.from_json_schema(
+                        action.json_schema, action=link.href, method=action.method
+                    ).build()
         return main

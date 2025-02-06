@@ -4,12 +4,11 @@ from functools import cached_property
 from dominate import document  # type: ignore
 from dominate import tags as t
 
-from mainline_server.rest_schema import APIResource
-from mainline_server.ui.components.base import Component
-from mainline_server.ui.components.head import DocumentHead
-from mainline_server.ui.components.home import Home
-from mainline_server.ui.script import RemoteScript
-from mainline_server.ui.style import RemoteStyleSheet
+from hyperapi.rest_schema import APIResource
+from hyperapi.components.base import Component
+from hyperapi.components.head import DocumentHead
+from hyperapi.components.script import RemoteScript
+from hyperapi.components.style import RemoteStyleSheet
 
 
 @dataclass
@@ -58,11 +57,3 @@ class Page(Component):
                 item.as_tag()
 
         return self.document
-
-    @property
-    def main_resource(self):
-        """Represents the main resource of the page"""
-        return Home(id="home")
-
-    def __str__(self):
-        return str(self.doc)

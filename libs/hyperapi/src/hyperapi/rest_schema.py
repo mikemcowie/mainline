@@ -1,3 +1,4 @@
+from http import HTTPMethod
 from typing import Generic, Literal, TypeVar
 
 from pydantic import AliasGenerator, AnyHttpUrl, BaseModel, ConfigDict, Field
@@ -23,6 +24,38 @@ class BaseResource(BaseModel):
     )
 
 
+class APILinkAction(BaseResource):
+    """Represents an action that can be made on a resource's state"""
+
+    method: HTTPMethod = Field(
+        ...,
+        title="Action HTTP method",
+        description="The HTTP method associated with the action",
+    )
+    title: str = Field(
+        ...,
+        title="Action Title",
+        description="A title for the action. Expected to become a form title",
+    )
+    description: str | None = Field(
+        ...,
+        title="Action Description",
+        description=(
+            "A description of the action. Expected to be rendered at the top of forms"
+        ),
+    )
+    highlight: bool = Field(
+        ...,
+        title="Highlight",
+        description="A hint instructing the action should be emphasized in a UI",
+    )
+    json_schema: dict = Field(
+        ...,
+        title="JSON Schema",
+        description="JSON schema of the data that needs to be provided for the action.",
+    )
+
+
 class APILink(BaseResource):
     href: AnyHttpUrl = Field(
         ...,
@@ -38,6 +71,11 @@ class APILink(BaseResource):
             "Identifier of a link. "
             "Typically used in the UI as the displayed text of a link or button"
         ),
+    )
+    actions: list[APILinkAction] = Field(
+        ...,
+        title="Actions",
+        description="Possible actions that can be taken on this resource",
     )
 
 
