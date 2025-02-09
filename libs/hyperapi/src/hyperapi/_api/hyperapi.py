@@ -1,13 +1,15 @@
-from datetime import datetime
-from fastapi import FastAPI, APIRouter as _APIRouter
-from dataclasses import dataclass
-from functools import cached_property
-from typing import NamedTuple, Callable, TYPE_CHECKING, Any, Collection
 from collections import OrderedDict
+from dataclasses import dataclass
+from datetime import datetime
+from functools import cached_property
+from http import HTTPMethod
+from typing import TYPE_CHECKING, Any, Callable, Collection, NamedTuple
+
 import structlog
+from fastapi import APIRouter as _APIRouter
+from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from pydantic import BaseModel
-from http import HTTPMethod
 
 try:
     import structlog

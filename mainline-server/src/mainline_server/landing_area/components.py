@@ -16,15 +16,13 @@ class HomePageCopy(BaseResource):
 class COPY:
     """Data holder for the homepage content"""
 
-    HEADING = "Take your python project live in minutes by taking the mainline"
+    HEADING = "Take your python project live in minutes"
     DETAIL = dedent(
         """
         Bring your idea to life without compromising on security and uptime.
 
         Simply add a couple of lines to your pyproject.toml, and we'll build, test, and
         deploy it with production-grade CI/CD pipelines.
-
-        Enter your project details to get started
         """
     )
 
@@ -40,7 +38,12 @@ class GithubRepositoryReference(BaseResource):
 class HomePageEnquiryForm(BaseResource):
     """Schema for homepage form to discover a project's availability"""
 
-    github_repository: GithubRepositoryReference = Field(...)
+    github_repository: str = Field(
+        ...,
+        title="Github Repository",
+        description="Repository in account/repo format",
+        examples=["mikemcowie/mainline"],
+    )
 
 
 @dataclass
@@ -56,6 +59,24 @@ class HomePage(Component):
             for link in self.resource.links:
                 for action in link.actions:
                     Form.from_json_schema(
-                        action.json_schema, action=link.href, method=action.method
+                        "Get started with your github details",
+                        action.json_schema,
+                        action=link.href,
+                        method=action.method,
                     ).build()
+        return main
+
+
+class HomePageEnquiryResponse(APIResource):
+    pass
+
+
+@dataclass
+class HomePageEnquiryComponent(Component):
+    resource: HomePageEnquiryResponse
+    children: list[Component]
+
+    def build(self):
+        with t.main() as main:
+            t.code("This has not yet been implemented")
         return main

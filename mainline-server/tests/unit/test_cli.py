@@ -1,9 +1,8 @@
 from unittest import mock
 
 import pytest
-from typer.testing import CliRunner
-
 from mainline_server.cli import app
+from typer.testing import CliRunner
 
 
 @pytest.fixture(autouse=True)

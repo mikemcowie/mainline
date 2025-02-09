@@ -21,6 +21,10 @@ def app_factory(
         return PlainTextResponse("pass")
 
     api.include_router(landing_area_router)
+    api.mount(
+        "/static",
+        StaticFiles(directory=Path(__file__).parent / "static", check_dir=True),
+    )
 
     if dev:
         # As a development convenience

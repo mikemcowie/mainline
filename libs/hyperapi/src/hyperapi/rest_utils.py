@@ -4,11 +4,12 @@ from typing import Mapping
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
+from mainline_server import AUTHOR, KEYWORDS
+
 from hyperapi.components.layout import Column, Component, Container, Row
+from hyperapi.components.nav import Nav
 from hyperapi.components.page import DocumentHead, Page
 from hyperapi.components.render import render
-
-from mainline_server import AUTHOR, KEYWORDS
 from hyperapi.rest_schema import (
     APILink,
     MetaCharset,
@@ -92,11 +93,10 @@ def provide_hyperlink(
 
 def negotiated(request: Request, main_component: Component):
     """Returns a negotiated response object"""
+    is_htmx = request.headers.get("hx-request")
+    if is_htmx:
+        return HTMLResponse(str(main_component.build()))
     preferred = allowable_content_types(request.headers)[0]
-    if preferred == ContentType.JSON:
-        # FastAPI itself will render the pydantic object
-        # Into a response object
-        return main_component.resource
     if preferred == ContentType.HTML:
         # render via the whole HTML rendering machinery
         # which is a whole other module to be designed still
@@ -114,13 +114,17 @@ def negotiated(request: Request, main_component: Component):
                                         id="head-row",
                                         children=[
                                             Column(
-                                                id="head-col-1", width=12, children=[]
+                                                id="head-col-1",
+                                                width=12,
+                                                children=[
+                                                    Nav(id="main-nav", children=[])
+                                                ],
                                             )
                                         ],
                                     ),
                                     Row(
                                         id="body-row",
-                                        cls=["row", "min-vh-100"],
+                                        cls=["row", "min-vh-80"],
                                         children=[
                                             Column(
                                                 id="body-col-1", width=4, children=[]
@@ -151,6 +155,10 @@ def negotiated(request: Request, main_component: Component):
                 )
             )
         )
+    if preferred == ContentType.JSON:
+        # FastAPI itself will render the pydantic object
+        # Into a response object
+        return main_component.resource
     raise HTTPException(
         status_code=status.HTTP_406_NOT_ACCEPTABLE,
         detail="caannot find acceptable response type for accept header "

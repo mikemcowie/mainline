@@ -1,9 +1,8 @@
 from pathlib import Path
 
 from fastapi import FastAPI
-from starlette.routing import Mount
-
 from mainline_server import api
+from starlette.routing import Mount
 
 
 def get_staticfiles_apps(app: FastAPI):

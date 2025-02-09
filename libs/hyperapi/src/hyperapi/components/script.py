@@ -1,4 +1,5 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
+from typing import Literal
 
 from dominate import tags as t  # type: ignore
 
@@ -13,6 +14,7 @@ class RemoteScript:
     id: str
     src: str
     integrity: str
+    crossorigin: Literal["anonymous"] = field(default="anonymous", init=False)
 
     def as_tag(self):
         return self.TAG_TYPE(**asdict(self))

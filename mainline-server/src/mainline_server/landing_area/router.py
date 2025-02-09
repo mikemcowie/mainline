@@ -1,7 +1,8 @@
 from typing import Annotated
 
-from fastapi import Form, Request
-from hyperapi import APIRouter, HyperAPI
+from fastapi import Form, Request, status
+from fastapi.responses import RedirectResponse
+from hyperapi import APIRouter
 from hyperapi.rest_schema import APILink, APILinkAction, APIResource
 from hyperapi.rest_utils import meta, negotiated, provide_hyperlink
 
@@ -9,7 +10,9 @@ from mainline_server.landing_area.components import (
     COPY,
     HomePage,
     HomePageCopy,
+    HomePageEnquiryComponent,
     HomePageEnquiryForm,
+    HomePageEnquiryResponse,
     HomePageResource,
 )
 
@@ -48,14 +51,26 @@ def api_root(request: Request):
     )
 
 
-@router.get("/enquiries/")
-def enquire_get(request: Request):
-    assert isinstance(request.app, HyperAPI)
-    for route in request.app.routes:
-        if "enquiries" in str(route):
-            print(route.endpoint)
-
-
-@router.post("/enquiries/")
+@router.post("/enquiries", response_model=HomePageEnquiryResponse)
 def enquire(request: Request, enquiry: Annotated[HomePageEnquiryForm, Form()]):
-    pass
+    return RedirectResponse(
+        url=str(provide_hyperlink(request, "Enquiry result", "enquiry_result").href),
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
+
+
+@router.get("/enquiries/mine", response_model=HomePageEnquiryResponse)
+def enquiry_result(request: Request):
+    return negotiated(
+        request,
+        HomePageEnquiryComponent(
+            resource=HomePageEnquiryResponse(
+                self=provide_hyperlink(request, "Home", "api_root"),
+                title="Foo",  # enquiry.github_repository,
+                object={},
+                links=[],
+                meta=meta(request.app),
+            ),
+            children=[],
+        ),
+    )

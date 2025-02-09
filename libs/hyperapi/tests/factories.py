@@ -1,16 +1,15 @@
-from polyfactory.factories import DataclassFactory
-from polyfactory.factories.pydantic_factory import ModelFactory
-
-from mainline_server.rest_schema import (
-    MetaCharset,
-    MetaHTMLEquivContent,
-    MetaNameContent,
-)
-from mainline_server.ui.components.head import (
+from hyperapi.components.head import (
     APIResource,
     RemoteScript,
     RemoteStyleSheet,
 )
+from hyperapi.rest_schema import (
+    MetaCharset,
+    MetaHTMLEquivContent,
+    MetaNameContent,
+)
+from polyfactory.factories import DataclassFactory
+from polyfactory.factories.pydantic_factory import ModelFactory
 
 
 class APIResourceFactory(ModelFactory[APIResource]):

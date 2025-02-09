@@ -1,7 +1,6 @@
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-
 from mainline_server.api import app_factory
 
 

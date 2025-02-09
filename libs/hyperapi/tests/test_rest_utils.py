@@ -1,7 +1,6 @@
 import pytest
 from fastapi import HTTPException
-
-from mainline_server import rest_utils
+from hyperapi import rest_utils
 
 WEB_BROWSER_ACCEPTS_HEADER = (
     "Accept: text/html, application/xhtml+xml, "

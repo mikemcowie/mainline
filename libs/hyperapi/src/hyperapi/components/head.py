@@ -2,10 +2,10 @@ from dataclasses import dataclass, field
 
 from dominate import tags as t  # type: ignore
 
-from hyperapi.rest_schema import APIResource
 from hyperapi.components.base import Component
 from hyperapi.components.script import RemoteScript
 from hyperapi.components.style import RemoteStyleSheet
+from hyperapi.rest_schema import APIResource
 
 
 @dataclass

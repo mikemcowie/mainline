@@ -4,11 +4,11 @@ from functools import cached_property
 from dominate import document  # type: ignore
 from dominate import tags as t
 
-from hyperapi.rest_schema import APIResource
 from hyperapi.components.base import Component
 from hyperapi.components.head import DocumentHead
 from hyperapi.components.script import RemoteScript
 from hyperapi.components.style import RemoteStyleSheet
+from hyperapi.rest_schema import APIResource
 
 
 @dataclass
@@ -55,5 +55,6 @@ class Page(Component):
                 t.meta(m.model_dump())
             for item in self.scripts + self.stylesheets:
                 item.as_tag()
+            t.link(rel="icon", type="image/x-icon", href="/static/logo.svg")
 
         return self.document
